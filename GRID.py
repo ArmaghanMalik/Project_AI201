@@ -1,29 +1,46 @@
-def make_grid(rows, width):
-	grid = []
-	gap = width // rows
-	for i in range(rows):
-		grid.append([])
-		for j in range(rows):
-			spot = Spot(i, j, gap, rows)
-			grid[i].append(spot)
-
-	return grid
+"""
+class implementation of grid
+"""
+import pygame
+import numpy as np
+from Node import Node, ColorPalette as Clr
 
 
-def draw_grid(win, rows, width):
-	gap = width // rows
-	for i in range(rows):
-		pygame.draw.line(win, GREY, (0, i * gap), (width, i * gap))
-		for j in range(rows):
-			pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
+class Grid:
+    def __init__(self, total_rows, window_width):
+        self.rows = total_rows
+        self.gap = window_width // total_rows
+        self.grid = np.empty(shape=[total_rows, total_rows], dtype=Node)
+        for i in range(total_rows):
+            for j in range(total_rows):
+                self.grid[i, j] = Node(i, j, self.gap, total_rows)
 
+    def reset_grid(self):
+        for row in self.grid:
+            for node in row:
+                node.reset()
 
-def draw(win, grid, rows, width):
-	win.fill(WHITE)
+    def render_gridlines(self, window, window_width):
+        """
+        renders grey lines separating and highlighting each node
+        :param window:
+        :param window_width:
+        :return: void
+        """
+        for i in range(self.rows):
+            pygame.draw.line(window, Clr['GREY'], (0, i * self.gap), (window_width, i * self.gap))
+            for j in range(self.rows):
+                pygame.draw.line(window, Clr['GREY'], (j * self.gap, 0), (j * self.gap, window_width))
 
-	for row in grid:
-		for spot in row:
-			spot.draw(win)
+    def render_grid(self, window, window_width):
+        """
+        renders the grid, gridlines and each node
+        :param window:
+        :param window_width:
+        :return:
+        """
+        for row in self.grid:
+            for node in row:
+                node.draw(window)
 
-	draw_grid(win, rows, width)
-	pygame.display.update()
+        self.render_gridlines(window, window_width)
